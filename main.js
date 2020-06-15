@@ -1,5 +1,6 @@
 const getData = (url) => {
-    return fetch(url);
+    const data = await fetch(url);
+    return data.text();
 };
 
 const getQuality30 = async () => {
