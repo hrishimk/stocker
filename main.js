@@ -1,4 +1,4 @@
-const getData = (url) => {
+const getData = async (url) => {
     const data = await fetch(url);
     return data.text();
 };
