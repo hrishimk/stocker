@@ -8,7 +8,7 @@ const getQuality30 = async () => {
     console.log(data);
 };
 
-const getLowVolatile = () => {
+const getLowVolatile = async () => {
     const url = './data/MW-NIFTY100-LOW-VOLATILITY.csv';
     const data = await getData(url);
     console.log(data);
