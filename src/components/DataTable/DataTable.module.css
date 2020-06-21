@@ -1,0 +1,19 @@
+table {
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}
+
+td,
+th {
+  padding: 10px;
+  text-align: left;
+}
+
+.numberCol {
+  text-align: right;
+}
