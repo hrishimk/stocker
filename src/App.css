@@ -8,6 +8,8 @@ body {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  background-color: #4a4a4a;
+  color: #e3e3e3;
 }
 
 .App {
@@ -15,4 +17,29 @@ body {
   display: flex;
   justify-content: center;
   flex-direction: column;
+}
+.container {
+  display: block;
+  margin: auto;
+}
+
+h1 {
+  margin: 20px 0px;
+}
+
+p {
+  margin: 15px 0px;
+}
+
+.filters {
+  margin: 15px 0px;
+}
+
+.filterItem {
+  margin: 15px 35px 15px 0;
+  cursor: pointer;
+}
+
+.filterItem input {
+  margin-right: 5px;
 }

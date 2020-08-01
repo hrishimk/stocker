@@ -111,23 +111,25 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Stockist</h1>
-      <p>Strategic index based stock filtering</p>
-      <div className="filters">
-        <label>
-          <input type="checkbox" checked={onlyLowVol} onChange={volChangeHandler} />
+      <div class="container">
+        <h1>Stockist</h1>
+        <p>Strategic index based stock filtering</p>
+        <div className="filters">
+          <label class="filterItem">
+            <input type="checkbox" checked={onlyLowVol} onChange={volChangeHandler} />
         Low Volatile
       </label>
-        <select value={selectedCap.id} onChange={capChangeHandler} >
-          {
-            capFilter.map(item => (
-              <option value={item.id}>{item.name}</option>
-            ))
-          }
-        </select>
-      </div>
-      <div className="data">
-        <DataTable data={tableData} />
+          <select class="filterItem" value={selectedCap.id} onChange={capChangeHandler} >
+            {
+              capFilter.map(item => (
+                <option value={item.id}>{item.name}</option>
+              ))
+            }
+          </select>
+        </div>
+        <div className="data">
+          <DataTable data={tableData} />
+        </div>
       </div>
     </div>
   );
