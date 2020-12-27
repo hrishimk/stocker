@@ -20,8 +20,12 @@ function App() {
   ]
 
   const [allData, setAllData] = useState()
+
+  const [onlyQuality, setOnlyQuality] = useState(false);
   const [onlyLowVol, setOnlyLowVol] = useState(false);
   const [onlyMom, setOnlyMom] = useState(false);
+  const [onlyAlphaLow, setOnlyAlphaLow] = useState(false);
+
   const [tableData, setTableData] = useState([]);
   const [selectedCap, setSelectedCap] = useState(capFilter[0]);
 
@@ -52,6 +56,10 @@ function App() {
     return allData ? allData.momentum.data.slice(1) : []
   }, [allData])
 
+  const alphaLowData = useCallback(() => {
+    return allData ? allData.alpha_low_volatile.data.slice(1) : []
+  }, [allData])
+
   const nifty200Data = useCallback(() => {
     return allData ? allData.nifty_200.data.slice(1) : []
   }, [allData])
@@ -67,19 +75,27 @@ function App() {
     return accumalator
   }
 
-
-
   const filtered = useCallback(() => {
-    let data = qualityData()
+    let data = nifty200Data()
+
+    if (onlyQuality) {
+      data = data.filter(item => qualityData().find(lv => lv.symbol === item.symbol))
+    }
+
     if (onlyLowVol) {
-      data =  data.filter(item => lowVolData().find(lv => lv.symbol === item.symbol))
+      data = data.filter(item => lowVolData().find(lv => lv.symbol === item.symbol))
     }
 
     if (onlyMom) {
-      data =  data.filter(item => momData().find(lv => lv.symbol === item.symbol))
+      data = data.filter(item => momData().find(lv => lv.symbol === item.symbol))
     }
+
+    if (onlyAlphaLow) {
+      data = data.filter(item => alphaLowData().find(lv => lv.symbol === item.symbol))
+    }
+
     return data
-  }, [lowVolData, momData, onlyLowVol, onlyMom, qualityData])
+  }, [alphaLowData, lowVolData, momData, nifty200Data, onlyAlphaLow, onlyLowVol, onlyMom, onlyQuality, qualityData])
 
   const capFiltered = useCallback((data) => {
     switch (selectedCap.id) {
@@ -103,12 +119,20 @@ function App() {
     }));
   }
 
+  const qualityChangeHandler = () => {
+    setOnlyQuality(!onlyQuality)
+  }
+
   const volChangeHandler = () => {
     setOnlyLowVol(!onlyLowVol)
   }
 
   const momChangeHandler = () => {
     setOnlyMom(!onlyMom)
+  }
+
+  const alphaLowChangeHandler = () => {
+    setOnlyAlphaLow(!onlyAlphaLow)
   }
 
   useEffect(() => {
@@ -124,15 +148,23 @@ function App() {
     <div className="App">
       <div class="container">
         <h1>Stockist</h1>
-        <p>Nifty 200 Quality 30</p>
+        <p>Nifty 200</p>
         <div className="filters">
           <label class="filterItem">
+            <input type="checkbox" checked={onlyQuality} onChange={qualityChangeHandler} />
+            NIFTY200 QUALITY 30
+      </label>
+          <label class="filterItem">
             <input type="checkbox" checked={onlyLowVol} onChange={volChangeHandler} />
-        Low Volatile
+            NIFTY100 LOW VOLATILITY 30
       </label>
           <label class="filterItem">
             <input type="checkbox" checked={onlyMom} onChange={momChangeHandler} />
-        Momentum
+            NIFTY200 MOMENTUM 30
+      </label>
+          <label class="filterItem">
+            <input type="checkbox" checked={onlyAlphaLow} onChange={alphaLowChangeHandler} />
+            NIFTY ALPHA LOW-VOLATILITY 30
       </label>
           {/* <select class="filterItem" value={selectedCap.id} onChange={capChangeHandler} >
             {
