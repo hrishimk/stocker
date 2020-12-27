@@ -21,6 +21,7 @@ function App() {
 
   const [allData, setAllData] = useState()
   const [onlyLowVol, setOnlyLowVol] = useState(false);
+  const [onlyMom, setOnlyMom] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [selectedCap, setSelectedCap] = useState(capFilter[0]);
 
@@ -47,17 +48,18 @@ function App() {
     return allData ? allData.low_volatile.data.slice(1) : []
   }, [allData])
 
+  const momData = useCallback(() => {
+    return allData ? allData.momentum.data.slice(1) : []
+  }, [allData])
+
   const nifty200Data = useCallback(() => {
     return allData ? allData.nifty_200.data.slice(1) : []
   }, [allData])
 
   const query = async () => {
     let data = await fetch('https://stocker.jijnasu.in/');
-    data = JSON.parse(await data.text());
-    return data.map(item => {
-      item.data = JSON.parse(item.data);
-      return item;
-    })
+    data = await data.json();
+    return data
   }
 
   const dataFormatter = (accumalator, value) => {
@@ -67,12 +69,17 @@ function App() {
 
 
 
-  const volFiltered = useCallback(() => {
+  const filtered = useCallback(() => {
+    let data = qualityData()
     if (onlyLowVol) {
-      return qualityData().filter(item => lowVolData().find(lv => lv.symbol === item.symbol))
+      data =  data.filter(item => lowVolData().find(lv => lv.symbol === item.symbol))
     }
-    return qualityData()
-  }, [lowVolData, onlyLowVol, qualityData])
+
+    if (onlyMom) {
+      data =  data.filter(item => momData().find(lv => lv.symbol === item.symbol))
+    }
+    return data
+  }, [lowVolData, momData, onlyLowVol, onlyMom, qualityData])
 
   const capFiltered = useCallback((data) => {
     switch (selectedCap.id) {
@@ -100,10 +107,14 @@ function App() {
     setOnlyLowVol(!onlyLowVol)
   }
 
+  const momChangeHandler = () => {
+    setOnlyMom(!onlyMom)
+  }
+
   useEffect(() => {
-    let data = volFiltered();
-    setTableData(formatted(capFiltered(data)));
-  }, [capFiltered, onlyLowVol, selectedCap, volFiltered, allData])
+    let data = filtered();
+    setTableData(formatted(data));
+  }, [capFiltered, onlyLowVol, selectedCap, allData, filtered])
 
   const capChangeHandler = (e) => {
     setSelectedCap(capFilter.find(item => item.id === e.target.value));
@@ -113,19 +124,23 @@ function App() {
     <div className="App">
       <div class="container">
         <h1>Stockist</h1>
-        <p>Strategic index based stock filtering</p>
+        <p>Nifty 200 Quality 30</p>
         <div className="filters">
           <label class="filterItem">
             <input type="checkbox" checked={onlyLowVol} onChange={volChangeHandler} />
         Low Volatile
       </label>
-          <select class="filterItem" value={selectedCap.id} onChange={capChangeHandler} >
+          <label class="filterItem">
+            <input type="checkbox" checked={onlyMom} onChange={momChangeHandler} />
+        Momentum
+      </label>
+          {/* <select class="filterItem" value={selectedCap.id} onChange={capChangeHandler} >
             {
               capFilter.map(item => (
                 <option value={item.id}>{item.name}</option>
               ))
             }
-          </select>
+          </select> */}
         </div>
         <div className="data">
           <DataTable data={tableData} />
