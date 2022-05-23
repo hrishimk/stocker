@@ -104,7 +104,7 @@ function App() {
     }
 
     return data
-  }, [dividend50Data, alphaLowData, lowVolData, momData, nifty200Data, onlyAlphaLow, onlyLowVol, onlyMom, onlyQuality, qualityData])
+  }, [nifty200Data, onlyQuality, onlyLowVol, onlyMom, onlyAlphaLow, onlyDiv, qualityData, lowVolData, momData, alphaLowData, dividend50Data])
 
   const capFiltered = useCallback((data) => {
     switch (selectedCap.id) {
