@@ -25,6 +25,7 @@ function App() {
   const [onlyLowVol, setOnlyLowVol] = useState(false);
   const [onlyMom, setOnlyMom] = useState(false);
   const [onlyAlphaLow, setOnlyAlphaLow] = useState(false);
+  const [onlyDiv, setOnlyDiv] = useState(false);
 
   const [tableData, setTableData] = useState([]);
   const [selectedCap, setSelectedCap] = useState(capFilter[0]);
@@ -64,6 +65,10 @@ function App() {
     return allData ? allData.nifty_200.data.slice(1) : []
   }, [allData])
 
+  const dividend50Data = useCallback(() => {
+    return allData ? allData.dividend_50.data.slice(1) : []
+  }, [allData])
+
   const query = async () => {
     let data = await fetch('https://stocker.jijnasu.in/');
     data = await data.json();
@@ -94,8 +99,12 @@ function App() {
       data = data.filter(item => alphaLowData().find(lv => lv.symbol === item.symbol))
     }
 
+    if (onlyDiv) {
+      data = data.filter(item => dividend50Data().find(lv => lv.symbol === item.symbol))
+    }
+
     return data
-  }, [alphaLowData, lowVolData, momData, nifty200Data, onlyAlphaLow, onlyLowVol, onlyMom, onlyQuality, qualityData])
+  }, [dividend50Data, alphaLowData, lowVolData, momData, nifty200Data, onlyAlphaLow, onlyLowVol, onlyMom, onlyQuality, qualityData])
 
   const capFiltered = useCallback((data) => {
     switch (selectedCap.id) {
@@ -135,10 +144,14 @@ function App() {
     setOnlyAlphaLow(!onlyAlphaLow)
   }
 
+  const div50ChangeHandler = () => {
+    setOnlyDiv(!onlyDiv)
+  }
+
   useEffect(() => {
     let data = filtered();
     setTableData(formatted(data));
-  }, [capFiltered, onlyLowVol, selectedCap, allData, filtered])
+  }, [capFiltered, onlyLowVol, selectedCap, allData, filtered, onlyDiv])
 
   const capChangeHandler = (e) => {
     setSelectedCap(capFilter.find(item => item.id === e.target.value));
@@ -162,9 +175,13 @@ function App() {
             <input type="checkbox" checked={onlyMom} onChange={momChangeHandler} />
             NIFTY200 MOMENTUM 30
       </label>
-          <label class="filterItem">
+      <label class="filterItem">
             <input type="checkbox" checked={onlyAlphaLow} onChange={alphaLowChangeHandler} />
             NIFTY ALPHA LOW-VOLATILITY 30
+      </label>
+      <label class="filterItem">
+            <input type="checkbox" checked={onlyDiv} onChange={div50ChangeHandler} />
+            NIFTY DIVIDEND OPPORTUNITIES 50
       </label>
           {/* <select class="filterItem" value={selectedCap.id} onChange={capChangeHandler} >
             {
